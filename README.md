@@ -2,6 +2,8 @@
 
 ## Init
 
+请使用[goproxy](https://goproxy.io/zh/)
+
 ```bash
 go mod init
 go mod download #(or go mod vendor)
