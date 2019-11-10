@@ -4,18 +4,28 @@ metadata:
   name: custom-scheduler
   labels:
     app: custom-scheduler
+    component: scheduler
+    tiler: control-plane
+  namespace: kube-system
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: custom-scheduler
+      tiler: control-plane
+      component: scheduler
   template:
     metadata:
       labels:
         app: custom-scheduler
+        tiler: control-plane
+        component: scheduler
     spec:
       serviceAccount: custom-scheduler
       containers:
-        - name: custom-scheduler
-          image: ty0207/custom-scheduler
-          imagePullPolicy: Always
+      - name: custom-scheduler
+        image: ty0207/custom-scheduler
+        securityContext:
+          privileged: false
+        volumeMounts: []
+      hostNetwork: false

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  namespace: default 
+  namespace: kube-system
   name: custom-scheduler 
   labels:
     app: custom-scheduler 
@@ -14,7 +14,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: custom-scheduler
-  namespace: default 
+  namespace: kube-system
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
