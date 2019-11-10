@@ -43,12 +43,16 @@ func NewScheduler(podQueue chan *v1.Pod, quit chan struct{}) Scheduler {
 	}
 
 	return Scheduler{
+		// connection with kubernetes api server with ServiceAccount define and assign in cluster
 		clientset:  clientset,
+		// a channel for new pod
 		podQueue:   podQueue,
 		nodeLister: initInformers(clientset, podQueue, quit),
+		// register predicate function
 		predicates: []predicateFunc{
 			randomPredicate,
 		},
+		// register priority function
 		priorities: []priorityFunc{
 			randomPriority,
 		},
@@ -109,6 +113,7 @@ func (s *Scheduler) Run(quit chan struct{}) {
 
 func (s *Scheduler) ScheduleOne() {
 
+	// get a pod from channel
 	p := <-s.podQueue
 	fmt.Println("found a pod to schedule:", p.Namespace, "/", p.Name)
 
@@ -149,6 +154,7 @@ func (s *Scheduler) findFit(pod *v1.Pod) (string, error) {
 	return s.findBestNode(priorities), nil
 }
 
+// scheduler result send to kubernetes apiserver by client
 func (s *Scheduler) bindPod(p *v1.Pod, node string) error {
 	return s.clientset.CoreV1().Pods(p.Namespace).Bind(&v1.Binding{
 		ObjectMeta: metav1.ObjectMeta{
@@ -163,6 +169,7 @@ func (s *Scheduler) bindPod(p *v1.Pod, node string) error {
 	})
 }
 
+// find in kubectl get events
 func (s *Scheduler) emitEvent(p *v1.Pod, message string) error {
 	timestamp := time.Now().UTC()
 	_, err := s.clientset.CoreV1().Events(p.Namespace).Create(&v1.Event{
@@ -206,6 +213,7 @@ func (s *Scheduler) runPredicates(nodes []*v1.Node, pod *v1.Pod) []*v1.Node {
 }
 
 func (s *Scheduler) predicatesApply(node *v1.Node, pod *v1.Pod) bool {
+	// call every predicate function registered above
 	for _, predicate := range s.predicates {
 		if !predicate(node, pod) {
 			return false
@@ -214,6 +222,7 @@ func (s *Scheduler) predicatesApply(node *v1.Node, pod *v1.Pod) bool {
 	return true
 }
 
+// simple implement for predicate
 func randomPredicate(node *v1.Node, pod *v1.Pod) bool {
 	r := rand.Intn(2)
 	return r == 0
@@ -221,6 +230,7 @@ func randomPredicate(node *v1.Node, pod *v1.Pod) bool {
 
 func (s *Scheduler) prioritize(nodes []*v1.Node, pod *v1.Pod) map[string]int {
 	priorities := make(map[string]int)
+	// for every node in nodes, call every priority function and statistic
 	for _, node := range nodes {
 		for _, priority := range s.priorities {
 			priorities[node.Name] += priority(node, pod)
