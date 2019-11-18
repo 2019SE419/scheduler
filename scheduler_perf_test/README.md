@@ -15,7 +15,7 @@ The test provides 7 kinds of different priorities to test,`PodAntiAffinity`,`Sec
 [Here](./scheduler_log) is the result(Pay attention to those lines with `scheduler.go`).
 
 
-## sHow to run test file
+## Show to run test file
 
 First build a golang environment to run.
 
@@ -30,7 +30,7 @@ Second get into golang environment.
 sudo docker run -it --privileged goenv:v1 /bin/bash
 ```
 
-Thirdly, cloning kubernetes’ file
+Thirdly, cloning kubernetes file
 
 ```shell
 git clone https://github.com/kubernetes/kubernetes
@@ -56,7 +56,7 @@ cd test/integration/scheduler_perf/
   - use `chmod +x _output/bin/xxx-gen`
 
 - [GetOpenAPIDefinitions](https://github.com/kubernetes/kubernetes/issues/69974)
-- If you use `make` instead of  `make UPDATE_API_KNOWN_VIOLATIONS=true`, you might encounter another problem: api-rules violation_exceptions.list.
+- If you use `make` instead of  `make UPDATE_API_KNOWN_VIOLATIONS=true`, you might encounter another problem: api-rules violation_exceptions.list.
 
 ## Best Practice
 
