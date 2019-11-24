@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"math/Log2"
 	"time"
 
 	"errors"
@@ -254,4 +255,14 @@ func (s *Scheduler) findBestNode(priorities map[string]int) string {
 
 func randomPriority(node *v1.Node, pod *v1.Pod) int {
 	return rand.Intn(100)
+}
+
+func customPriority(node *v1.Node, pod *v1.Pod) int {
+	const res = node.Status.Capacity[v1.ResourceCPU]
+	const req = pod.Spec.containers[].resources.requests.cpu
+	const diff = res - req
+	if(diff < 0) {
+		return 0
+	}
+	return 100 - math.Log2(diff)
 }
